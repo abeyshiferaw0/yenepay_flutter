@@ -1,0 +1,1 @@
+enum YenepayProcess { Express, Cart }
