@@ -1,7 +1,7 @@
 name: yenepay_flutter
 description: A new flutter plugin project.
 version: 0.0.1
-homepage:
+homepage: https://github.com/abeyshiferaw0/yenepay_flutter/tree/master
 
 environment:
   sdk: ">=2.15.0 <3.0.0"
