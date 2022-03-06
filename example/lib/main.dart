@@ -1,62 +1,78 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
+import 'package:yenepay_flutter/models/enums.dart';
+import 'package:yenepay_flutter/models/yenepay_item.dart';
+import 'package:yenepay_flutter/models/yenepay_parameters.dart';
 import 'package:yenepay_flutter/yenepay_flutter.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  // This widget is the root of your application.
   @override
-  State<MyApp> createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      home: const HomePage(),
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
   void initState() {
+    YenepayFlutter.init(
+      onPaymentSuccess: (List<YenepayItem> items) {
+        print("onPaymentSuccess ${items.length} ${items[0].itemName}");
+      },
+      onPaymentCancel: (List<YenepayItem> items) {
+        print("onPaymentCancel ${items.length} ${items[0].itemName}");
+      },
+      onPaymentFailure: (List<YenepayItem> items) {
+        print("onPaymentFailure ${items.length} ${items[0].itemName}");
+      },
+      onError: (e) {
+        print("onError ${e.toString()}");
+      },
+    );
+
+    ///start payment
+    YenepayFlutter.startPayment(
+      isTestEnv: true,
+      yenepayParameters: YenepayParameters(
+        process: YenepayProcess.Express,
+        merchantId: "SB1356",
+        items: [
+          YenepayItem(
+            itemId: '1',
+            unitPrice: 12.2,
+            quantity: 2,
+            itemName: 'test',
+          ),
+        ],
+      ),
+    );
     super.initState();
-    initPlatformState();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await YenepayFlutter.platformVersion ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
+  @override
+  void dispose() {
+    YenepayFlutter.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
-      ),
-    );
+    return Container();
   }
 }

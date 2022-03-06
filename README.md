@@ -144,3 +144,13 @@ for getting a test `merchant and buyer` account visit(https://sandbox.yenepay.co
     );
 ```
 
+finally don't forget to call dispose when app close
+
+```dart
+  @override
+  void dispose() {
+    YenepayFlutter.dispose();
+    super.dispose();
+  }
+```
+
